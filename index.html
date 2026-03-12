@@ -15,13 +15,23 @@
       <svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
       <svg viewBox="0 0 24 24"><path d="M2 22h20V2L2 22zm18-2H6.83L20 6.83V20z"/></svg>
       <div class="battery-group">
-        <span>72%</span>
-        <div class="battery-shell"><div class="battery-fill"></div></div>
+        <span id="batteryPct">--%</span>
+        <div class="battery-shell"><div class="battery-fill" id="batteryFill"></div></div>
       </div>
     </div>
   </div>
 
-  <div class="main-area" id="mainArea"></div>
+  <div class="main-area" id="mainArea">
+    <div class="pages-track" id="pagesTrack">
+      <div class="page" id="page0"></div>
+      <div class="page" id="page1"></div>
+    </div>
+  </div>
+
+  <div class="page-dots" id="pageDots">
+    <span class="dot active"></span>
+    <span class="dot"></span>
+  </div>
 
   <div class="dock-wrapper" id="dockWrap">
     <div class="dock" id="dock"></div>
@@ -29,7 +39,37 @@
 
   <div class="home-indicator"><div class="home-bar"></div></div>
   <div class="drop-highlight" id="highlight"></div>
-  <button class="done-btn" id="doneBtn">完成</button>
+
+  <!-- 编辑模式工具栏 -->
+  <div class="edit-toolbar" id="editToolbar">
+    <button class="edit-tb-btn" id="btnResetDefault">恢复默认</button>
+    <button class="edit-tb-btn" id="btnSavePreset">存为预设</button>
+    <button class="edit-tb-btn" id="btnLoadPreset">恢复预设</button>
+    <button class="edit-tb-btn edit-tb-done" id="doneBtn">完成</button>
+  </div>
+
+  <!-- 保存预设弹窗 -->
+  <div class="modal-overlay" id="presetModal">
+    <div class="modal-card">
+      <div class="modal-title">保存预设</div>
+      <input class="modal-input" id="presetNameInput" type="text" placeholder="输入预设名称" maxlength="20">
+      <div class="modal-actions">
+        <button class="modal-btn modal-cancel" id="presetCancel">取消</button>
+        <button class="modal-btn modal-confirm" id="presetConfirm">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 加载预设弹窗 -->
+  <div class="modal-overlay" id="loadModal">
+    <div class="modal-card">
+      <div class="modal-title">选择预设</div>
+      <div class="preset-list" id="presetList"></div>
+      <div class="modal-actions">
+        <button class="modal-btn modal-cancel" id="loadCancel">取消</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script src="launcher.js"></script>
