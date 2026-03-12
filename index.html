@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>SunnyPhone</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="screen">
+  <div class="status-bar">
+    <span id="statusTime">12:00</span>
+    <div class="status-icons">
+      <svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M2 22h20V2L2 22zm18-2H6.83L20 6.83V20z"/></svg>
+      <div class="battery-group">
+        <span>72%</span>
+        <div class="battery-shell"><div class="battery-fill"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-area" id="mainArea"></div>
+
+  <div class="dock-wrapper" id="dockWrap">
+    <div class="dock" id="dock"></div>
+  </div>
+
+  <div class="home-indicator"><div class="home-bar"></div></div>
+  <div class="drop-highlight" id="highlight"></div>
+  <button class="done-btn" id="doneBtn">完成</button>
+</div>
+
+<script src="launcher.js"></script>
+
+</body>
+</html>
