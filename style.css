@@ -232,7 +232,7 @@ html, body {
 
 /* ── 编辑工具栏 ── */
 .edit-toolbar {
-  display: none;
+  display: none !important;
   position: absolute;
   top: 6px; left: 50%;
   transform: translateX(-50%);
@@ -240,7 +240,7 @@ html, body {
   gap: 6px;
   align-items: center;
 }
-#screen.edit-mode .edit-toolbar { display: flex; }
+#screen.edit-mode .edit-toolbar { display: flex !important; }
 
 .edit-tb-btn {
   background: rgba(255,255,255,0.18);
@@ -262,7 +262,7 @@ html, body {
 
 /* ── 弹窗遮罩 ── */
 .modal-overlay {
-  display: none;
+  display: none !important;
   position: absolute;
   inset: 0;
   z-index: 2000;
@@ -272,7 +272,7 @@ html, body {
   align-items: center;
   justify-content: center;
 }
-.modal-overlay.visible { display: flex; }
+.modal-overlay.visible { display: flex !important; }
 
 .modal-card {
   background: rgba(36,36,62,0.95);

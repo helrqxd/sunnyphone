@@ -4,7 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>SunnyPhone</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=4">
+  <style>
+    /* 内联关键样式兜底，防止外部 CSS 缓存或加载失败导致元素裸露 */
+    .edit-toolbar { display: none !important; position: absolute; top: 6px; left: 50%; transform: translateX(-50%); z-index: 100; }
+    .modal-overlay { display: none !important; position: absolute; inset: 0; z-index: 2000; }
+    .drop-highlight { display: none; position: absolute; z-index: 999; }
+    #screen.edit-mode .edit-toolbar { display: flex !important; }
+    .modal-overlay.visible { display: flex !important; }
+  </style>
 </head>
 <body>
 
@@ -72,7 +80,7 @@
   </div>
 </div>
 
-<script src="launcher.js"></script>
+<script src="launcher.js?v=4"></script>
 
 </body>
 </html>
