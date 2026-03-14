@@ -4,10 +4,19 @@
 function makeIconUrl(emoji, c1, c2) {
   return 'data:image/svg+xml,' + encodeURIComponent(
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">' +
-    '<defs><linearGradient id="g" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">' +
+    '<defs>' +
+    '<linearGradient id="g" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">' +
     '<stop stop-color="' + c1 + '"/><stop offset="1" stop-color="' + c2 + '"/>' +
-    '</linearGradient></defs>' +
-    '<rect width="120" height="120" rx="26" fill="url(#g)"/>' +
+    '</linearGradient>' +
+    '<linearGradient id="hl" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">' +
+    '<stop offset="0" stop-color="rgba(255,255,255,0.35)"/><stop offset="0.5" stop-color="rgba(255,255,255,0)"/>' +
+    '</linearGradient>' +
+    '<filter id="sd" x="-8%" y="-8%" width="116%" height="116%">' +
+    '<feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.15)" flood-opacity="1"/>' +
+    '</filter>' +
+    '</defs>' +
+    '<rect width="120" height="120" rx="28" fill="url(#g)" filter="url(#sd)"/>' +
+    '<rect width="120" height="120" rx="28" fill="url(#hl)"/>' +
     '<text x="60" y="78" text-anchor="middle" font-size="56">' + emoji + '</text></svg>'
   );
 }
@@ -16,10 +25,19 @@ function makeTextIconUrl(text, c1, c2) {
   var size = text.length <= 2 ? 42 : (text.length <= 3 ? 34 : 26);
   return 'data:image/svg+xml,' + encodeURIComponent(
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">' +
-    '<defs><linearGradient id="g" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">' +
+    '<defs>' +
+    '<linearGradient id="g" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">' +
     '<stop stop-color="' + c1 + '"/><stop offset="1" stop-color="' + c2 + '"/>' +
-    '</linearGradient></defs>' +
-    '<rect width="120" height="120" rx="26" fill="url(#g)"/>' +
+    '</linearGradient>' +
+    '<linearGradient id="hl" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">' +
+    '<stop offset="0" stop-color="rgba(255,255,255,0.35)"/><stop offset="0.5" stop-color="rgba(255,255,255,0)"/>' +
+    '</linearGradient>' +
+    '<filter id="sd" x="-8%" y="-8%" width="116%" height="116%">' +
+    '<feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.15)" flood-opacity="1"/>' +
+    '</filter>' +
+    '</defs>' +
+    '<rect width="120" height="120" rx="28" fill="url(#g)" filter="url(#sd)"/>' +
+    '<rect width="120" height="120" rx="28" fill="url(#hl)"/>' +
     '<text x="60" y="' + (60 + size * 0.36) + '" text-anchor="middle" font-size="' + size + '" ' +
     'fill="white" font-weight="bold" font-family="sans-serif">' + text + '</text></svg>'
   );
@@ -48,6 +66,7 @@ var APPS = {
   redbook:    { name: '小红书',   iconUrl: makeTextIconUrl('红', '#fe2c55', '#d91a40') },
   lofter:     { name: 'LOFTER',   iconUrl: makeTextIconUrl('Lo', '#00c853', '#009624') },
   map:        { name: '地图',     iconUrl: makeIconUrl('🗺️', '#22c55e', '#16a34a') },
+  contacts:   { name: '联系人',   iconUrl: makeIconUrl('👥', '#5c6bc0', '#3949ab') },
 };
 
 /* ================================================================
@@ -88,7 +107,7 @@ function defaultState() {
         clockRow: -1
       }
     ],
-    dock: ['apisetting', 'theme', 'calendar'],
+    dock: ['apisetting', 'theme', 'calendar', 'contacts'],
     currentPage: 0
   };
 }
@@ -96,7 +115,13 @@ function defaultState() {
 function loadState() {
   try {
     var s = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (s && s.v === 4 && Array.isArray(s.pages) && Array.isArray(s.dock)) return s;
+    if (s && s.v === 4 && Array.isArray(s.pages) && Array.isArray(s.dock)) {
+      if (!s.dock.includes('contacts') && s.dock.length < DOCK_MAX) {
+        s.dock.push('contacts');
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+      }
+      return s;
+    }
   } catch (_) {}
   return defaultState();
 }
@@ -265,7 +290,6 @@ var swipe = { active: false, startX: 0, startY: 0, startTx: 0, locked: false, ax
 
 mainArea.addEventListener('pointerdown', function (e) {
   if (editMode) return;
-  if (e.target.closest('.grid-item')) return;
   swipe.active = true;
   swipe.startX = e.clientX;
   swipe.startY = e.clientY;
@@ -422,6 +446,10 @@ function moveClockToRow(pi, newRow) {
  *  拖拽
  * ================================================================ */
 var editMode = false, drag = null, longPressTimer = null;
+var edgeFlipTimer = null;
+var edgeFlipDir = null;
+var EDGE_ZONE = 50;
+var EDGE_FLIP_DELAY = 220;
 
 screenEl.addEventListener('contextmenu', function (e) { e.preventDefault(); });
 
@@ -468,6 +496,7 @@ function beginDown(e, el, zone, pi) {
 function liftItem() {
   if (!drag) return;
   drag.active = true;
+  swipe.active = false;
   var el = drag.el, sr = drag.sr, er = drag.origRect;
   screenEl.appendChild(el);
   el.classList.add('dragging');
@@ -490,6 +519,53 @@ function onMove(e) {
 
   drag.el.style.left = (e.clientX - drag.sr.left - drag.offsetX) + 'px';
   drag.el.style.top  = (e.clientY - drag.sr.top  - drag.offsetY) + 'px';
+
+  /* 编辑模式：拖到边缘时翻页 + 实时滑动预览 */
+  if (editMode) {
+    var distLeft = e.clientX - drag.sr.left;
+    var distRight = drag.sr.right - e.clientX;
+    var inLeft = distLeft < EDGE_ZONE && curPage > 0;
+    var inRight = distRight < EDGE_ZONE && curPage < TOTAL_PAGES - 1;
+
+    if (inLeft && edgeFlipDir !== 'left') {
+      if (edgeFlipTimer) { clearTimeout(edgeFlipTimer); edgeFlipTimer = null; }
+      edgeFlipDir = 'left';
+      edgeFlipTimer = setTimeout(function () {
+        edgeFlipTimer = null;
+        edgeFlipDir = null;
+        pagesTrack.classList.remove('edge-peek');
+        goToPage(curPage - 1, true);
+        if (navigator.vibrate) navigator.vibrate(15);
+      }, EDGE_FLIP_DELAY);
+    } else if (inRight && edgeFlipDir !== 'right') {
+      if (edgeFlipTimer) { clearTimeout(edgeFlipTimer); edgeFlipTimer = null; }
+      edgeFlipDir = 'right';
+      edgeFlipTimer = setTimeout(function () {
+        edgeFlipTimer = null;
+        edgeFlipDir = null;
+        pagesTrack.classList.remove('edge-peek');
+        goToPage(curPage + 1, true);
+        if (navigator.vibrate) navigator.vibrate(15);
+      }, EDGE_FLIP_DELAY);
+    } else if (!inLeft && !inRight) {
+      if (edgeFlipTimer) { clearTimeout(edgeFlipTimer); edgeFlipTimer = null; }
+      if (edgeFlipDir) {
+        edgeFlipDir = null;
+        pagesTrack.classList.remove('edge-peek');
+        pagesTrack.style.transform = 'translateX(' + (-curPage * 50) + '%)';
+      }
+    }
+
+    if (edgeFlipDir) {
+      pagesTrack.classList.add('edge-peek');
+      var depth = edgeFlipDir === 'left'
+        ? 1 - distLeft / EDGE_ZONE
+        : 1 - distRight / EDGE_ZONE;
+      var peekPx = Math.round(depth * 45);
+      var sign = edgeFlipDir === 'left' ? '+' : '-';
+      pagesTrack.style.transform = 'translateX(calc(' + (-curPage * 50) + '% ' + sign + ' ' + peekPx + 'px))';
+    }
+  }
 
   var mr = mainArea.getBoundingClientRect();
   var pr = pageEls[curPage].getBoundingClientRect();
@@ -552,12 +628,18 @@ function showHighlight(t) {
 
 function onUp() {
   if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+  if (edgeFlipTimer) { clearTimeout(edgeFlipTimer); edgeFlipTimer = null; edgeFlipDir = null; }
   if (!drag) return;
   if (drag.active) {
     highlightEl.style.display = 'none';
     if (drag.target) executeDrop(drag.target);
     else snapBack();
     saveState();
+  } else if (!editMode && !drag.moved) {
+    var id = drag.id;
+    if (id && !id.startsWith('clock_') && typeof window.openApp === 'function') {
+      window.openApp(id);
+    }
   }
   drag = null;
 }
@@ -781,6 +863,12 @@ window.addEventListener('resize', function () {
   goToPage(curPage, false);
   layoutAll();
 });
+
+window.reloadLauncherState = function () {
+  state = loadState();
+  curPage = state.currentPage || 0;
+  renderAll();
+};
 
 initBattery();
 renderAll();

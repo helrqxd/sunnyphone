@@ -3,34 +3,34 @@
 <head>
     <meta charset="UTF-8" />
 
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 
-		<!-- 1. (核心) 为苹果设备设置主屏幕图标 -->
-		<link rel="apple-touch-icon" href="https://i.postimg.cc/Kj8JnRcp/267611-CC01-F8-A3-B4910-A2-C2-FFDE479-DC.jpg" />
-		<link rel="apple-touch-icon" sizes="152x152" href="https://i.postimg.cc/Kj8JnRcp/267611-CC01-F8-A3-B4910-A2-C2-FFDE479-DC.jpg" />
-		<link rel="apple-touch-icon" sizes="180x180" href="https://i.postimg.cc/Kj8JnRcp/267611-CC01-F8-A3-B4910-A2-C2-FFDE479-DC.jpg" />
-		<link rel="apple-touch-icon" sizes="167x167" href="https://i.postimg.cc/Kj8JnRcp/267611-CC01-F8-A3-B4910-A2-C2-FFDE479-DC.jpg" />
+	<!-- 1. (核心) 为苹果设备设置主屏幕图标 -->
+	<link rel="apple-touch-icon" href="https://i.postimg.cc/Kj8JnRcp/267611-CC01-F8-A3-B4910-A2-C2-FFDE479-DC.jpg" />
+	<link rel="apple-touch-icon" sizes="152x152" href="https://i.postimg.cc/Kj8JnRcp/267611-CC01-F8-A3-B4910-A2-C2-FFDE479-DC.jpg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="https://i.postimg.cc/Kj8JnRcp/267611-CC01-F8-A3-B4910-A2-C2-FFDE479-DC.jpg" />
+	<link rel="apple-touch-icon" sizes="167x167" href="https://i.postimg.cc/Kj8JnRcp/267611-CC01-F8-A3-B4910-A2-C2-FFDE479-DC.jpg" />
 
-		<!-- 2. (核心) 链接到manifest文件 -->
-		<link rel="manifest" href="manifest.json" />
+	<!-- 2. (核心) 链接到manifest文件 -->
+	<link rel="manifest" href="manifest.json" />
 
-		<!-- 3. (核心) 告诉苹果设备，这是一个Web应用，可以全屏显示 -->
-		<meta name="apple-mobile-web-app-capable" content="yes" />
+	<!-- 3. (核心) 告诉苹果设备，这是一个Web应用，可以全屏显示 -->
+	<meta name="apple-mobile-web-app-capable" content="yes" />
 
-		<!-- 4. (核心) 设置苹果设备全屏模式下的状态栏样式 -->
-		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<!-- 4. (核心) 设置苹果设备全屏模式下的状态栏样式 -->
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-		<!-- 5. (可选) 设置应用在主屏幕上显示的标题 -->
-		<meta name="apple-mobile-web-app-title" content="SunnyPhone" />
+	<!-- 5. (可选) 设置应用在主屏幕上显示的标题 -->
+	<meta name="apple-mobile-web-app-title" content="SunnyPhone" />
 
-		<!-- 6. (兼容) 为部分安卓浏览器提供支持 -->
-		<meta name="mobile-web-app-capable" content="yes" />
+	<!-- 6. (兼容) 为部分安卓浏览器提供支持 -->
+	<meta name="mobile-web-app-capable" content="yes" />
 
-		<!-- 7. (备用) 标准浏览器页签图标 -->
-		<link rel="icon" type="image/png" href="https://i.postimg.cc/Kj8JnRcp/267611-CC01-F8-A3-B4910-A2-C2-FFDE479-DC.jpg" />
+	<!-- 7. (备用) 标准浏览器页签图标 -->
+	<link rel="icon" type="image/png" href="https://i.postimg.cc/Kj8JnRcp/267611-CC01-F8-A3-B4910-A2-C2-FFDE479-DC.jpg" />
 
-		<title>SunnyPhone</title>
-  <link rel="stylesheet" href="style.css?v=4">
+	<title>SunnyPhone</title>
+  <link rel="stylesheet" href="style.css?v=7">
   <style>
     /* 内联关键样式兜底，防止外部 CSS 缓存或加载失败导致元素裸露 */
     .edit-toolbar { display: none !important; position: absolute; top: 6px; left: 50%; transform: translateX(-50%); z-index: 100; }
@@ -104,9 +104,32 @@
       </div>
     </div>
   </div>
+
+  <!-- 设置面板 -->
+  <div class="settings-overlay" id="settingsOverlay">
+    <div class="settings-header">
+      <button class="settings-back-btn" id="settingsBack">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/></svg>
+        返回
+      </button>
+      <span class="settings-title">设置</span>
+      <span style="width:50px"></span>
+    </div>
+    <div class="settings-body" id="settingsBody"></div>
+  </div>
+  <!-- 联系人面板 -->
+  <div class="contacts-overlay" id="contactsOverlay">
+    <div id="contactsRoot"></div>
+  </div>
+
+  <input type="file" id="backupFileInput" accept=".json" style="display:none">
+  <input type="file" id="avatarFileInput" accept="image/*" style="display:none">
+  <input type="file" id="contactImportInput" accept=".json" style="display:none">
 </div>
 
-<script src="launcher.js?v=4"></script>
+<script src="launcher.js?v=9"></script>
+<script src="settings.js?v=2"></script>
+<script src="contacts.js?v=1"></script>
 
 </body>
 </html>
